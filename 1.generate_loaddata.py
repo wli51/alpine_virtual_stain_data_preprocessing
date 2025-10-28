@@ -11,59 +11,60 @@ index_directory.resolve(strict=True)
 if not index_directory.exists() and not index_directory.is_dir():
     print(f"Index directory {index_directory} does not exist or is not a directory")
     sys.exit(1)
+print(f"Index directory: {index_directory}")
 
-
-config_path = pathlib.Path("./config.yml")
-config_path.resolve(strict=True)
-if not config_path.exists() or not config_path.is_file():
-    print(f"Config file {config_path} does not exist or is not a file")
+config_dir_path = pathlib.Path("./config_files").absolute()
+config_dir_path.resolve(strict=True)
+if not config_dir_path.exists() or not config_dir_path.is_dir():
+    print(f"Config directory {config_dir_path} does not exist or is not a directory")
     sys.exit(1)
 
 output_csv_dir = pathlib.Path(f"/projects/wli19@xsede.org/alsf_preprocess/{batch_name}/loaddata_csvs")
 output_csv_dir.mkdir(parents=True, exist_ok=True)
+print(f"Output CSV directory: {output_csv_dir}")
 
 images_folders = list(index_directory.rglob("Images"))
-plate_folders = list(index_directory.glob("Plate *"))
+# Loop through each folder and create a LoadData CSV
+for folder in images_folders:
+    # Get the first folder directly under the index_directory
+    relative_path = folder.relative_to(index_directory)
+    first_folder = relative_path.parts[0]  # First-level folder
+    
+    # Generate the plate name and find matching config file based on folder structure
+    if first_folder.startswith('BR00'):
+        plate_name = first_folder.split('_')[0]  # Take the first part
 
-# Build mapping of BR00 IDs to plate number
-br00_to_plate = {}
+    elif first_folder.startswith('2024'):
+        second_folder = relative_path.parts[1]  # Second-level folder
+        part1 = '_'.join(first_folder.split('_')[-2:])  # Last two parts of first folder ("CellLine_Re-imaged")
+        part2 = second_folder.split('_')[0]  # First part of second folder (BR00 ID)
 
-# First parse "All Cell Lines" folders to get BR00 IDs
-for plate_folder in plate_folders:
-    if "All Cell Lines" in plate_folder.name:
-        for subfolder in plate_folder.iterdir():
-            if subfolder.is_dir():
-                br00_id = subfolder.name.split("__")[0]
-                plate_num = plate_folder.name.split()[1]
-                br00_to_plate[br00_id] = plate_num
+        # Combine to make plate name for saving CSV
+        plate_name = f"{part1}_{part2}" 
 
-# Now process everything
-for plate_folder in plate_folders:
-    for subfolder in plate_folder.iterdir():
-        if not subfolder.is_dir():
-            continue
+        # Find the matching config file by matching part1 with the config file's prefix
+        matching_configs = list(config_dir_path.glob(f"{part1.split('_')[0]}_*.yml"))
+        
+        # Debugging print to check if matching config files are found
+        print(f"Matching configs found: {matching_configs}")
 
-        br00_id = subfolder.name.split("__")[0]
-
-        if "All Cell Lines" in plate_folder.name:
-            # Original run
-            plate_name = f"{br00_id}"
+        if matching_configs:
+            config_path = matching_configs[0]  # Take the first match
         else:
-            # Reimaged
-            parts = plate_folder.name.split()
-            plate_num = parts[1]
-            cell_line = (
-                " ".join(parts[2:]).replace("Reimage", "").strip().replace(" ", "_")
-            )
-            plate_name = f"{br00_id}_{cell_line}_Reimage"
+            print(f"No matching config file for: {part1}")
+            continue  # Skip if no matching config file
 
-        path_to_output_csv = (
-            output_csv_dir / f"{plate_name}_loaddata_original.csv"
-        ).absolute()
+    else:
+        print(f"Unexpected folder pattern: {folder}")
+        continue  # Skip if not matching patterns
 
-        ld_utils.create_loaddata_csv(
-            index_directory=subfolder / "Images",
-            config_path=config_path,
-            path_to_output=path_to_output_csv,
-        )
-        print(f"Created LoadData CSV for {plate_name} at {path_to_output_csv}")
+    # Create LoadData output path per plate
+    path_to_output_csv = (output_csv_dir / f"{plate_name}_loaddata_original.csv").absolute()
+
+    # Call the function to create the LoadData CSV
+    ld_utils.create_loaddata_csv(
+        index_directory=folder,
+        config_path=config_path,  # Use the matched config file
+        path_to_output=path_to_output_csv,
+    )
+    print(f"Created LoadData CSV for plate {plate_name} at {path_to_output_csv}")
