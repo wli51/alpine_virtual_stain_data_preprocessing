@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alpine-vs-preprocess"
+version = "0.1.0"
+description = ""
+requires-python = ">=3.12"
+dependencies = [
+    "pandas",
+    "numpy"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["utils*"]
