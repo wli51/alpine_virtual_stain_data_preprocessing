@@ -9,7 +9,8 @@ description = ""
 requires-python = ">=3.12"
 dependencies = [
     "pandas",
-    "numpy"
+    "numpy",
+    "pe2loaddata @ git+https://github.com/broadinstitute/pe2loaddata.git@4c9aee0b9fbe74bb7308b1114dabf2895113552d"
 ]
 
 [tool.setuptools.packages.find]
