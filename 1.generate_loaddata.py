@@ -6,7 +6,7 @@ import sys
 import utils.loaddata_utils as ld_utils
 
 batch_name = "SN0313537"
-index_directory = pathlib.Path(f"/pl/active/koala/ALSF_pilot_data/{batch_name}")
+index_directory = pathlib.Path(f"/pl/active/koala/ALSF_pilot_data/{batch_name}/")
 index_directory.resolve(strict=True)
 if not index_directory.exists() and not index_directory.is_dir():
     print(f"Index directory {index_directory} does not exist or is not a directory")
@@ -23,7 +23,8 @@ output_csv_dir = pathlib.Path(f"/projects/wli19@xsede.org/alsf_preprocess/{batch
 output_csv_dir.mkdir(parents=True, exist_ok=True)
 print(f"Output CSV directory: {output_csv_dir}")
 
-images_folders = list(index_directory.rglob("Images"))
+images_folders = list(index_directory.rglob('Images'))
+
 # Loop through each folder and create a LoadData CSV
 for folder in images_folders:
     # Get the first folder directly under the index_directory
@@ -33,6 +34,7 @@ for folder in images_folders:
     # Generate the plate name and find matching config file based on folder structure
     if first_folder.startswith('BR00'):
         plate_name = first_folder.split('_')[0]  # Take the first part
+        config_path = config_dir_path / "config.yml"  # Use default config for BR00
 
     elif first_folder.startswith('2024'):
         second_folder = relative_path.parts[1]  # Second-level folder
@@ -67,4 +69,3 @@ for folder in images_folders:
         config_path=config_path,  # Use the matched config file
         path_to_output=path_to_output_csv,
     )
-    print(f"Created LoadData CSV for plate {plate_name} at {path_to_output_csv}")
