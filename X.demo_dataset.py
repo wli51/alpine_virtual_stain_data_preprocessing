@@ -1,7 +1,6 @@
 import pathlib
 import sys
 
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -25,7 +24,7 @@ if not LOADDATA_FILE_PATH.exists() and not LOADDATA_FILE_PATH.is_file():
     sys.exit(1)    
 
 SC_FEATURES_DIR = pathlib.Path(
-    f"/pl/active/koala/ALSF_pilot_data/PREPROCESSED_PROFILES_{BATCH_NAME}/single_cell_profiles"
+    f"/pl/active/koala/ALSF_pilot_data/preprocessed_profiles_{BATCH_NAME}/single_cell_profiles"
 )
 SC_FEATURES_DIR.resolve(strict=True)
 if not SC_FEATURES_DIR.exists() and not SC_FEATURES_DIR.is_dir():
@@ -40,7 +39,6 @@ TARGET_CHANNEL_NAMES = ["OrigDNA", "OrigER", "OrigAGP", "OrigMito", "OrigRNA"]
 
 CONFLUENCE = 1000
 
-CONFLUENCE = 1000
 
 loaddata_df = pd.read_csv(LOADDATA_FILE_PATH)
 print(f"Initial loaddata_df shape: {loaddata_df.shape}")
@@ -84,6 +82,7 @@ def plot_dataset(ids, i, save_path):
     plt.savefig(save_path)
 
 
+print("Creating CPLoadDataImageDataset...")
 cp_ids = CPLoadDataImageDataset(
     loaddata=loaddata_df,
     sc_feature=sc_feature_files,
@@ -98,6 +97,8 @@ cp_ids.transform = MaxScaleNormalize(
 print(f"Number of images in dataset: {len(cp_ids)}")
 plot_dataset(cp_ids, 0, f'demo_whole_{CONFLUENCE}.png')
 
+
+print("Creating CropCellImageDataset...")
 crop_ds = CropCellImageDataset.from_dataset(
     cp_ids,
     patch_size=256,
