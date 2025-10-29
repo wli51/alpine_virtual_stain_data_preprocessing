@@ -3,7 +3,6 @@ import pandas as pd
 import re
 import sys
 
-import utils.loaddata_utils as ld_utils
 
 batch_name = "SN0313537"
 index_directory = pathlib.Path(f"/pl/active/koala/ALSF_pilot_data/{batch_name}/")
