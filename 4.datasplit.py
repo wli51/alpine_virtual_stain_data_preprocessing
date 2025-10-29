@@ -60,7 +60,7 @@ barcode_df = pd.concat([pd.read_csv(f) for f in PLATEMAP_CSV_DIR.glob('Barcode_*
 
 platemap_df = pd.DataFrame()
 for platemap in barcode_df['platemap_file'].unique():
-    df = pd.read_csv(LOADDATA_CSV_DIR / f'{platemap}.csv')
+    df = pd.read_csv(PLATEMAP_CSV_DIR / f'{platemap}.csv')
     df['platemap_file'] = platemap
     platemap_df = pd.concat([platemap_df, df])    
 barcode_platemap_df = pd.merge(barcode_df, platemap_df, on='platemap_file', how='inner')
