@@ -56,7 +56,7 @@ CONDITIONS = list(TRAIN_CONDITION_KWARGS.keys())
 
 
 ## Load platemap and well cell line metadata
-barcode_df = pd.concat([pd.read_csv(f) for f in LOADDATA_CSV_DIR.glob('Barcode_*.csv')])
+barcode_df = pd.concat([pd.read_csv(f) for f in PLATEMAP_CSV_DIR.glob('Barcode_*.csv')])
 
 platemap_df = pd.DataFrame()
 for platemap in barcode_df['platemap_file'].unique():
