@@ -12,7 +12,6 @@ if not QC_DIR.exists() and not QC_DIR.is_dir():
     sys.exit(1)
 
 QC_OUTPUT_DIR = pathlib.Path("./qc_output")
-QC_OUTPUT_DIR.resolve(strict=True)
 QC_OUTPUT_DIR.mkdir(exist_ok=True)
 
 target_channel_keys = ["OrigDNA", "OrigER", "OrigAGP", "OrigMito", "OrigRNA"]
