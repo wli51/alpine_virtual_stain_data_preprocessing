@@ -8,19 +8,13 @@ import pandas as pd
 
 BATCH_NAME = "SN0313537"
 
-QC_DIR = pathlib.Path("./whole_img_qc_output")
-QC_DIR.resolve(strict=True)
-if not QC_DIR.exists() and not QC_DIR.is_dir():
-    print(f"QC directory {QC_DIR} does not exist.")
-    sys.exit(1)
-
 PLATEMAP_CSV_DIR = pathlib.Path("./metadata/platemaps")
 PLATEMAP_CSV_DIR.resolve(strict=True)
 if not PLATEMAP_CSV_DIR.exists() and not PLATEMAP_CSV_DIR.is_dir():
     print(f"Platemap CSV directory {PLATEMAP_CSV_DIR} does not exist.")
     sys.exit(1)
 
-QC_FILE = pathlib.Path("./whole_img_qc_output/qc_exclusion.csv")
+QC_FILE = pathlib.Path("./qc_output/qc_exclusion.csv")
 QC_FILE.resolve(strict=True)
 if not QC_FILE.exists() and not QC_FILE.is_file():
     print(f"QC file {QC_FILE} does not exist.")
